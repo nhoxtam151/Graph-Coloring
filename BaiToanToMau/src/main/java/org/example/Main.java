@@ -1,62 +1,60 @@
 package org.example;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
 import java.util.stream.Collectors;
 
+
+//Huynh Duc Tam -3120410459
 public class Main {
 
-
-  public void baiToanToMau(List<Node> nodes) {
-
-   List<Node> sorted = nodes.stream().sorted(new SortCustom()).collect(Collectors.toList());
-   List<Node> colored = new ArrayList<>();
-   Node firstVertex = sorted.get(0);
-   firstVertex.color = 1;
-   colored.add(firstVertex);
-   sorted.remove(firstVertex);
-
-   for(Node node : sorted) {
-
-     if(!node.neighbors.contains(firstVertex) && !colored.contains(node)) {
-       System.out.println(node.color);
-       colored.add(node);
-       //sorted.remove(node); have to remove outside
-     }
-
-   }
-//   return nodes.stream().skip(1).filter(node -> !node.neighbors.contains(node.color != 0));
-
+  public void print(List<Node> nodes, Integer colors) {
+    char[][] board = new char[nodes.size()][nodes.size()];
+    System.out.println();
+    System.out.println("Result board:");
+    nodes.forEach(node -> System.out.print(node.name + " "));
+    System.out.println();
+    for (int i = 1; i <= colors; i++) {
+      for(int j = 0; j < nodes.size(); j++) {
+        if(nodes.get(j).color == i) {
+          board[i][j] = 'x';
+          System.out.print(board[i][j] + " "); // 1 x and 1 space
+        } else {
+          System.out.print("  "); //2 space
+        }
+      }
+      System.out.println();
+    }
   }
-
 
   public static void main(String[] args) {
 
-    List<Integer> colors = new ArrayList<>();
-    colors.add(1);
-    colors.add(2);
-    colors.add(3);
-    colors.add(4);
-    colors.add(5);
-
     List<Node> adjacencyList = new ArrayList<>();
     Node nodeA = new Node();
+    nodeA.name = 'A';
     Node nodeB = new Node();
+    nodeB.name = 'B';
     Node nodeL = new Node();
+    nodeL.name = 'L';
     Node nodeC = new Node();
+    nodeC.name = 'C';
     Node nodeD = new Node();
+    nodeD.name = 'D';
     Node nodeG = new Node();
+    nodeG.name = 'G';
     Node nodeH = new Node();
+    nodeH.name = 'H';
     Node nodeK = new Node();
+    nodeK.name = 'K';
     Node nodeE = new Node();
+    nodeE.name = 'E';
     Node nodeF = new Node();
+    nodeF.name = 'F';
     Node nodeI = new Node();
+    nodeI.name = 'I';
     Node nodeJ = new Node();
+    nodeJ.name = 'J';
 
     adjacencyList.add(nodeA);
     adjacencyList.add(nodeB);
@@ -64,7 +62,7 @@ public class Main {
     adjacencyList.add(nodeD);
     adjacencyList.add(nodeE);
     adjacencyList.add(nodeF);
-    adjacencyList.add(nodeJ);
+    adjacencyList.add(nodeG);
     adjacencyList.add(nodeH);
     adjacencyList.add(nodeI);
     adjacencyList.add(nodeJ);
@@ -110,11 +108,44 @@ public class Main {
     nodeE.neighbors.add(nodeL);
     nodeE.neighbors.add(nodeJ);
 
+    nodeF.neighbors.add(nodeA);
+    nodeF.neighbors.add(nodeI);
+
+    nodeI.neighbors.add(nodeF);
+    nodeI.neighbors.add(nodeA);
+
     nodeJ.neighbors.add(nodeL);
     nodeJ.neighbors.add(nodeE);
 
     Main main = new Main();
     main.baiToanToMau(adjacencyList);
 
+  }
+
+
+  public void baiToanToMau(List<Node> nodes) {
+
+    List<Node> sorted = nodes.stream().sorted(new SortCustom()).collect(Collectors.toList());
+
+    Node firstColouredVertex = null;
+    firstColouredVertex = sorted.get(0);
+    firstColouredVertex.color = 1;
+    int n = sorted.size();
+    int color = 1;
+    for (int i = 1; i < n; i++) {
+      for (int j = i; j < n; j++) {
+        int finalI = i;
+        if (sorted.get(j).neighbors.stream().noneMatch(neighbor -> neighbor.color == finalI)
+            && sorted.get(j).color == 0) {
+          sorted.get(j).color = i;
+          color = i;
+        }
+      }
+
+    }
+    sorted.forEach(
+        node -> System.out.println("Coloured " + node.name + " with color " + node.color));
+
+    print(sorted, color);
   }
 }
